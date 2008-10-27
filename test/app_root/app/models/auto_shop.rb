@@ -10,17 +10,19 @@ class AutoShop < ActiveRecord::Base
     event :fix_vehicle do
       transition :to => 'available', :from => 'busy'
     end
+
+    define_state_conditionals
   end
   
-  # Is the Auto Shop available for new customers?
-  def available?
-    state == 'available'
-  end
-  
-  # Is the Auto Shop currently not taking new customers?
-  def busy?
-    state == 'busy'
-  end
+#  # Is the Auto Shop available for new customers?
+#  def available?
+#    state == 'available'
+#  end
+#
+#  # Is the Auto Shop currently not taking new customers?
+#  def busy?
+#    state == 'busy'
+#  end
   
   # Increments the number of customers in service
   def increment_customers

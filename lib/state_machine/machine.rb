@@ -379,7 +379,14 @@ module PluginAWeek #:nodoc:
       def after_transition(options = {})
         add_transition_callback(:after, options)
       end
-      
+
+      # Adds a method called name_of_state? for each state defined
+      # in the state machine
+      def define_state_conditionals
+        states.each { |state_name| add_state_method state_name }
+      end
+
+
       private
         # Adds the given callback to the callback chain during a state transition
         def add_transition_callback(type, options)
@@ -407,6 +414,16 @@ module PluginAWeek #:nodoc:
             owner_class.named_scope name.to_sym, lambda {|*values| {:conditions => {attribute => values.flatten}}} unless owner_class.respond_to?(name)
           end
         end
+
+        # Add a method returning true if machine is in the state 'name'
+        # for example switch.on? will be defined if the machine has a state
+        # called 'on'
+        def add_state_method(name)
+          attr = attribute
+          owner_class.class_eval do
+              define_method("#{name}?") { self.send(attr) == name } if not method_defined?(attr)
+        end
+      end
     end
   end
 end
